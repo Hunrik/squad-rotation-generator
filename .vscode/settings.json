@@ -1,0 +1,7 @@
+{
+    "standard.autoFixOnSave": true,
+    "standard.run": "onSave",
+    "javascript.validate.enable": false,
+    "files.autoSave": "off",
+    "standard.engine": "ts-standard"
+}
