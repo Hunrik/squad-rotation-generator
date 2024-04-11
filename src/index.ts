@@ -137,7 +137,6 @@ export function generateRotations (layerinfo: Record<string, MapInfo>, filters: 
     ? Object.keys(layerinfo).filter(map => filters.maps?.includes(map))
     : Object.keys(layerinfo)
 
-
   const rotations: Rotation[] = []
 
   for (const map of validMaps) {
@@ -157,21 +156,21 @@ export function generateRotations (layerinfo: Record<string, MapInfo>, filters: 
         ? layerInfo.factions.filter(faction => filters.factions?.includes(faction.name))
         : layerInfo.factions
 
-        validFactions.forEach(faction => {
-          const team1 = pickTeam(faction, 'Team1')
-          const team2 = pickTeam(faction, 'Team2')
-          rotations.push({
-            layer: layer,
-            team1: team1.name,
-            team2: team2.name
-          })
+      validFactions.forEach(faction => {
+        const team1 = pickTeam(faction, 'Team1')
+        const team2 = pickTeam(faction, 'Team2')
+        rotations.push({
+          layer,
+          team1: team1.name,
+          team2: team2.name
         })
+      })
     }
   }
   return rotations
 }
 
-function pickTeam(faction: Faction, team: Team): Faction {
+function pickTeam (faction: Faction, team: Team): Faction {
   return {
     name: faction.name,
     units: faction.units.filter(unit => unit.availableOnTeam === team || unit.availableOnTeam === 'Both')
