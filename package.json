@@ -1,0 +1,26 @@
+{
+  "name": "squad-rotation-generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --require ts-node/register 'src/*.test.ts'",
+    "start": "node --loader ts-node/esm src/index.ts",
+    "lint": "standard"
+  },
+  "author": "@hunrik",
+  "license": "ISC",
+  "devDependencies": {
+    "@tsconfig/node21": "^21.0.3",
+    "@types/chai": "^4.3.14",
+    "@types/mocha": "^10.0.6",
+    "chai": "^5.1.0",
+    "mocha": "^10.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "ts-standard": {
+    "project": "./tsconfig.json"
+  },
+  "type": "module"
+}
