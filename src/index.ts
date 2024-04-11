@@ -16,7 +16,7 @@ interface Faction {
 
 interface Unit {
   name: string
-  type: string // Usable Teams in sheets, needs to be clarified what this is exactly
+  type: string
   availableOnTeam: Team
 }
 
@@ -76,13 +76,9 @@ export async function parseLayerinfo (path: string): Promise<Record<string, MapI
       })
     }
 
-    if (layer === 'Skorpo_Skirmish_v1') {
-      debugger;
-    }
     if (layer) {
       if (state.currentLayer != null) {
         state.layers[state.currentLayer.name] = state.currentLayer
-
       }
       state.currentLayer = parseLayerName(layer)
     }
@@ -93,7 +89,6 @@ export async function parseLayerinfo (path: string): Promise<Record<string, MapI
       }
       if (state.currentLayer != null) {
         state.layers[state.currentLayer.name] = state.currentLayer
-
       }
       if (state.levelName !== undefined) {
         contents[state.levelName] = {
@@ -119,6 +114,69 @@ export async function parseLayerinfo (path: string): Promise<Record<string, MapI
 }
 
 parseLayerinfo('./layerinfo.csv')
+
+interface RotationFilters {
+  maps?: string[]
+  layers?: string[]
+  factions?: string[]
+  gameModes?: string[]
+}
+
+interface Rotation {
+  layer: string
+  team1: string
+  team2: string
+}
+
+export function generateRotations (layerinfo: Record<string, MapInfo>, filters: RotationFilters): Rotation[] {
+  // Generate all possible rotations
+  // Filter out rotations that don't match the filters
+  // Empty filters means all rotations are valid
+
+  const validMaps = (filters.layers != null)
+    ? Object.keys(layerinfo).filter(map => filters.maps?.includes(map))
+    : Object.keys(layerinfo)
+
+
+  const rotations: Rotation[] = []
+
+  for (const map of validMaps) {
+    const mapInfo = layerinfo[map]
+    const validLayers = (filters.layers != null)
+      ? Object.keys(mapInfo.layers).filter(layer => filters.layers?.includes(layer))
+      : Object.keys(mapInfo.layers)
+
+    console.log(validLayers)
+    for (const layer of validLayers) {
+      const layerInfo = mapInfo.layers[layer]
+      if (filters.gameModes != null && !filters.gameModes.includes(layerInfo.layerType)) {
+        continue
+      }
+
+      const validFactions = (filters.factions != null)
+        ? layerInfo.factions.filter(faction => filters.factions?.includes(faction.name))
+        : layerInfo.factions
+
+        validFactions.forEach(faction => {
+          const team1 = pickTeam(faction, 'Team1')
+          const team2 = pickTeam(faction, 'Team2')
+          rotations.push({
+            layer: layer,
+            team1: team1.name,
+            team2: team2.name
+          })
+        })
+    }
+  }
+  return rotations
+}
+
+function pickTeam(faction: Faction, team: Team): Faction {
+  return {
+    name: faction.name,
+    units: faction.units.filter(unit => unit.availableOnTeam === team || unit.availableOnTeam === 'Both')
+  }
+}
 
 export function parseLayerName (layer: string): LayerInfo {
   const layerName = layer.split('_')
