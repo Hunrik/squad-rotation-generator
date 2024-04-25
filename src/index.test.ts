@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import mocha from 'mocha'
-import { parseLayerinfo, parseLayerName, generateRotations } from './index.js'
+import { parseLayerinfo, parseLayerName, generateRotations, allianceByFaction } from './index.js'
 
 describe('parseLayerinfo', () => {
   it('should parse layer name', async () => {
@@ -59,9 +59,82 @@ describe('parseLayerinfo', () => {
 })
 
 describe.only('generateRotations', () => {
-  it('should generate rotations correctly without filters', async () => {
+  it('should generate only  valid rotations', async () => {
     const layerInfo = await parseLayerinfo('./layerinfo.csv')
     const result = generateRotations(layerInfo, {})
-    console.log(result)
+
+    // rotation by map
+    const rotationsByMap = result.reduce((acc, rotation) => {
+      if (!acc[rotation.layer]) {
+        acc[rotation.layer] = [{ team1: rotation.team1, team2: rotation.team2 }]
+      } else {
+        acc[rotation.layer] = [...acc[rotation.layer], { team1: rotation.team1, team2: rotation.team2 }]
+      }
+      return acc
+    }, {})
+
+    Object.keys(rotationsByMap).forEach(map => {
+      const rotations = rotationsByMap[map]
+
+      // Should not have teams playing against themselves
+      rotations.forEach(rotation => {
+        expect(rotation.team1).to.not.equal(rotation.team2)
+      })
+
+      // Should take FactionAlliance into consideration
+      rotations.forEach(rotation => {
+        const alliance1 = allianceByFaction(rotation.team1)
+        const alliance2 = allianceByFaction(rotation.team2)
+        if (alliance1 === 'INDEPENDENT' || alliance2 === 'INDEPENDENT') {
+          return
+        }
+        expect(alliance1).to.not.equal(alliance2)
+      })
+    })
+  })
+  it('should generate only Skorpo rotations with map filter', async () => {
+    const layerInfo = await parseLayerinfo('./layerinfo.csv')
+    const result = generateRotations(layerInfo, { maps: ['Skorpo'] })
+    expect(result).to.not.have.length(0)
+
+    result.forEach(rotation => {
+      expect(rotation.layer).to.match(/^Skorpo/)
+    })
+  })
+
+  it('should generate only Invasion rotations with gameModes filter', async () => {
+    const layerInfo = await parseLayerinfo('./layerinfo.csv')
+    const result = generateRotations(layerInfo, { gameModes: ['Invasion'] })
+    expect(result).to.not.have.length(0)
+
+    result.forEach(rotation => {
+      expect(rotation.layer).to.match(/Invasion/)
+    })
+  })
+
+  it('should generate rotations filtered to a gamemode', async () => {
+    const layerInfo = await parseLayerinfo('./layerinfo.csv')
+    const result = generateRotations(layerInfo, { gameModes: ['Skirmish'] })
+    expect(result).to.not.have.length(0)
+
+    result.forEach(rotation => {
+      expect(rotation.layer).to.match(/Skirmish/)
+    })
+  })
+
+  it('should generate rotations with involving a faction based on factions filter', async () => {
+    const layerInfo = await parseLayerinfo('./layerinfo.csv')
+    const result = generateRotations(layerInfo, { factions: ['VDV'] })
+    expect(result).to.not.have.length(0)
+
+    result.forEach(rotation => {
+      if (rotation.team1 !== 'VDV' && rotation.team2 !== 'VDV') {
+        throw new Error(`VDV not found in rotation ${rotation.layer}-${rotation.team1}-${rotation.team2}`)
+      }
+    })
+
+    // rotations should be unique
+    const uniqueRotations = result.map(rotation => `${rotation.layer}-${rotation.team1}-${rotation.team2}`)
+    expect(uniqueRotations).to.have.length(new Set(uniqueRotations).size)
   })
 })
