@@ -25,10 +25,15 @@ node index.js --input ./layerinfo.csv --out ./output.txt
 Here are the available options:
 
 `--input` or `-i`: Set the input file. Default is `./layerinfo.csv`.
+
 `--out` or `-o`: Set the output file. If not provided, the output will be written to stdout.
+
 You can also filter the rotations with the following options:
 
 `--factions`: A comma-separated list of factions.
+
 `--gamemode`: A comma-separated list of game modes.
+
 `--layers`: A comma-separated list of layers.
+
 `--maps`: A comma-separated list of maps.
