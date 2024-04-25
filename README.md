@@ -9,8 +9,8 @@ This is a CLI tool that generates rotations based on the provided layer informat
 Clone the repository and install the dependencies:
 
 ```bash
-git clone https://github.com/yourusername/yourrepository.git
-cd yourrepository
+git clone https://github.com/Hunrik/squad-rotation-generator.git
+cd squad-rotation-generator
 npm install
 ```
 
@@ -19,7 +19,7 @@ npm install
 You can run the tool with the following command:
 
 ```bash
-node index.js --input ./layerinfo.csv --out ./output.txt
+./bin/index.js rotations --input ./layerinfo.csv --out ./output.txt
 ```
 
 Here are the available options:

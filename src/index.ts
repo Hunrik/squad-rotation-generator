@@ -4,7 +4,7 @@ import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 
 yargs(hideBin(process.argv))
-  .command('rotations', 'Generate rotations based on layerinfo',() => {}, main)
+  .command('rotations', 'Generate rotations based on layerinfo', () => {}, main)
   .option('factions', {
     alias: 'f',
     type: 'string',
@@ -55,9 +55,6 @@ async function main (argv) {
   })
   output.end()
 }
-
-
-
 
 interface LayerInfo {
   name: string
@@ -203,7 +200,7 @@ export function generateRotations (layerinfo: Record<string, MapInfo>, filters: 
     if (filters.gameModes != null) {
       validLayers = validLayers.filter(layer => filters.gameModes?.includes(mapInfo.layers[layer].layerType))
     }
-    
+
     for (const layer of validLayers) {
       const layerInfo = mapInfo.layers[layer]
       if (filters.gameModes != null && !filters.gameModes.includes(layerInfo.layerType)) {
