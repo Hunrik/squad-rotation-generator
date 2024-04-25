@@ -9,7 +9,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}/src/index.ts",
+            "program": "${workspaceFolder}/src/index.ts --factions=VDV",
             "preLaunchTask": "tsc: build - tsconfig.json",
             "outFiles": ["${workspaceFolder}/out/**/*.js"]
           }

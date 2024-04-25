@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "bin": {
+    "squad-rotation-generator": "bin/index.js"
+  },
   "scripts": {
     "test": "mocha --require ts-node/register 'src/*.test.ts'",
     "start": "node --loader ts-node/esm src/index.ts",
-    "lint": "standard"
+    "lint": "standard",
+    "build": "tsc"
   },
   "author": "@hunrik",
   "license": "ISC",
@@ -22,5 +26,8 @@
   "ts-standard": {
     "project": "./tsconfig.json"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "yargs": "^17.7.2"
+  }
 }
